@@ -1,0 +1,30 @@
+﻿@inherits LayoutComponentBase
+@using EBZClient.Components;
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<MudThemeProvider IsDarkMode=true />
+
+<link rel="stylesheet" href="css/ebz.css" />
+
+<MudLayout>
+    <MudAppBar Color="Color.Primary">
+        <MudLink Href="/" Underline="Underline.None" Class="title">EBZ Project</MudLink>
+        <MudSpacer />
+        <Authorized LoggedIn=false>
+            <MudLink Color="Color.Surface" Class="mr-5"Href="/login">Login</MudLink>
+            <MudLink Color="Color.Surface" Href="/register">Register</MudLink>
+        </Authorized>
+        <Authorized LoggedIn=true>
+            <MudLink Color="Color.Surface" Class="mr-5" Href="/logout">Logout</MudLink>
+        </Authorized>
+    </MudAppBar>
+    <MudMainContent class="expand">
+        <MudContainer class="expand">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>

@@ -1,0 +1,44 @@
+﻿@*Register screen. Shows a message if registration went OK*@
+
+@page "/register"
+
+@using EBZClient.Components;
+@using EBZShared.Models;
+
+<PageTitle>Register</PageTitle>
+
+<MudContainer Class="expand center-flex">
+    @if (_message != string.Empty)
+    {
+        <FinishMessage Message="@_message" Title="Registration" />
+    }
+    else
+    {
+        <RegisterCard OnUserCreated="OnUserCreated"></RegisterCard>
+    }
+</MudContainer>
+
+@code {
+    private string _message = string.Empty;
+
+    #region Methods
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        _message = string.Empty;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="user"></param>
+    void OnUserCreated(User user)
+    {
+        _message = $"Thank you {user.Username} for registering! \nYou can now log in to your account!";
+    }
+
+    #endregion
+}

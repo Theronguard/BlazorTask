@@ -1,0 +1,73 @@
+﻿@*Login form with username validation*@
+
+@using EBZShared.Models;
+@using EBZClient.Scripts;
+
+@inject IAuth _auth;
+
+<MudForm @ref="_form" @bind-IsValid="@_isValid" Class="mud-container-box">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Login</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudDivider></MudDivider>
+        <MudCardContent>
+            <MudTextField T="string" Color Label="Username" Variant="Variant.Filled" @bind-Value="_user.Username" For="@(() => _user.Username)" Validation="UserExists" />
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled" Disabled="@(!_isValid)" Color="Color.Primary" Class="ml-auto expand" OnClick="OnLoginClicked">Login</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudForm>
+
+@code {
+    [Parameter]
+    public EventCallback<User> OnUserLoggedIn { get; set; }
+
+    private MudForm _form;
+    private bool _isValid;
+    private bool _showUserMessage = false;
+
+    private User _user = new User();
+
+    #region Methods
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public async void OnLoginClicked()
+    {        
+        if (!_isValid) return;
+
+        if (await _auth.Login(_user))
+        {
+            _showUserMessage = false;
+            await OnUserLoggedIn.InvokeAsync(_user);
+        }
+        else
+            _showUserMessage = true;
+
+        _form.Validate();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Used for showing validation message
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public string? UserExists(string text)
+    {
+        if (_showUserMessage)
+        {
+            _showUserMessage = false;
+            return "This user doesnt exist!";
+        }
+
+        return null;
+    }
+
+    #endregion
+}

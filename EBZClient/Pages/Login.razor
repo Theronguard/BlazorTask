@@ -1,0 +1,36 @@
+﻿@*Login screen. Shows a sucessful message if login completes without issues*@
+@page "/login"
+
+@using EBZShared.Models;
+@using EBZClient.Scripts;
+@using EBZClient.Components;
+
+<PageTitle>Login</PageTitle>
+
+<MudContainer Class="expand center-flex">
+    @if (_loginMessage != string.Empty)
+    {
+        <FinishMessage Message="@_loginMessage" Title="Login" />
+    }
+    else
+    {
+        <LoginCard OnUserLoggedIn="OnLogin"></LoginCard>
+    }
+</MudContainer>
+
+@code {
+    private string _loginMessage = string.Empty;
+
+    #region Methods
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="user"></param>
+    public void OnLogin(User user)
+    {
+        _loginMessage = $"Sucessfully logged in as {user.Username}";
+    }
+
+    #endregion
+}

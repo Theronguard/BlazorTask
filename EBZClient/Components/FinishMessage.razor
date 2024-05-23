@@ -1,0 +1,22 @@
+﻿@*A message box with a home button*@
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Title</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudDivider></MudDivider>
+    <MudCardContent>
+        <MudText Class="allow-multiline mb-5">@Message</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto expand" Href="/">Home</MudButton>
+    </MudCardContent>
+</MudCard>
+
+@code{
+    [Parameter]
+    public string Message {get; set;} = string.Empty;
+
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+}

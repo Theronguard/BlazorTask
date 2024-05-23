@@ -1,0 +1,86 @@
+﻿@*Register form with user property validation*@
+
+@using EBZShared.Models;
+@using EBZClient.Scripts;
+@using System.Net;
+
+@inject IAuth _auth;
+@inject IEBZWebApiController _webApiController;
+
+<EditForm Model="@_user" Class="mud-container-box">
+    <MudForm @ref="_form" @bind-IsValid="@_isValid">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Registration</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudDivider></MudDivider>
+            <MudCardContent>
+                <MudTextField Label="Username" Variant="Variant.Filled" @bind-Value="_user.Username" For="@(() => _user.Username)"/>
+                <div class="border-8 invisible"></div>
+                <MudSelect T="Gender" Label="Gender" @bind-Value="_user.Gender" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" Style="z-index: 100">
+                    <MudSelectItem Value="@(Gender.Male)" />
+                    <MudSelectItem Value="@(Gender.Female)" />
+                    <MudSelectItem Value="@(Gender.Unspecified)" />
+                </MudSelect>
+                <MudDatePicker Label="Date of birth" @bind-Date="@_dateOfBirth" Variant="Variant.Filled"/>
+                <MudTextField Label="Country" Variant="Variant.Filled" @bind-Value="_user.Country" For="@(() => _user.Country)" />
+                <MudTextField Label="City" Variant="Variant.Filled" @bind-Value="_user.City" For="@(() => _user.City)" />
+                <div class="border-8 invisible"></div>
+                <MudTextField Label="Introduction" Variant="Variant.Filled" @bind-Value="_user.Introduction" For="@(() => _user.Introduction)" AutoGrow="true"/>
+                <MudTextField Label="Skills" Variant="Variant.Filled" @bind-Value="_user.Skills" For="@(() => _user.Skills)" AutoGrow="true" />
+                <MudTextField Label="Interests" Variant="Variant.Filled" @bind-Value="_user.Interests" For="@(() => _user.Interests)" AutoGrow="true" />
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Disabled="@(!_isValid)" Color="Color.Primary" Class="ml-auto expand" OnClick="OnRegistrationClick">Register</MudButton>
+            </MudCardActions>
+        </MudCard>
+        <UserDataValidator @ref="_userDataValidator"></UserDataValidator>
+    </MudForm>
+</EditForm>
+
+@code {
+
+    /// <summary>
+    /// Runs when a user is created sucessfully on the backend
+    /// </summary>
+    [Parameter]
+    public EventCallback<User> OnUserCreated { get; set; }
+
+
+    private MudForm _form;
+    private bool _isValid = false;
+
+    private DateTime? _dateOfBirth { get; set; } = DateTime.Now;
+
+    private User _user = new User();
+    private UserDataValidator? _userDataValidator;
+
+    #region Methods
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void ClearUsernameValidation()
+    {
+        _userDataValidator.Clear(_user);
+    }
+
+    /// <summary>
+    /// Registration button click handler
+    /// </summary>
+    async void OnRegistrationClick()
+    {
+        if (!_isValid) return;
+
+        _user.DateOfBirth = DateOnly.FromDateTime((DateTime)_dateOfBirth!);
+
+        HttpStatusCode code = await _webApiController.AddUser(_user);
+
+        if (_userDataValidator.Validate(code, _user))
+            await OnUserCreated.InvokeAsync(_user);
+    }
+
+    #endregion
+}

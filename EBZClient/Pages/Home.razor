@@ -1,0 +1,15 @@
+﻿@page "/"
+
+@using EBZClient.Components;
+@using EBZShared.Models;
+
+<PageTitle>Home</PageTitle>
+
+<MudContainer Class="expand center-flex">
+    <Authorized LoggedIn="true">
+        <UserTable></UserTable>
+    </Authorized>
+    <Authorized LoggedIn=false>
+        <MudImage Src="penguin.gif" />
+    </Authorized>
+</MudContainer>

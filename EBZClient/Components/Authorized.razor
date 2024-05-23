@@ -1,0 +1,63 @@
+﻿@*
+    A custom component which renders its children based on your
+    login state. I'm aware there are libraries with <AuthorizeView> and other solutions,
+    but I wanted to add some components myself and reduce the overhead of a library.
+*@
+
+@using EBZClient.Scripts;
+@using EBZShared.Models;
+
+@inject IAuth _auth
+@inject IStorage _storage
+
+<div>
+    @if (_visible)
+    {
+        @ChildContent;
+    }
+</div>
+
+
+@code {
+
+    /// <summary>
+    /// When set to true, renders its children only when a user is logged in.
+    /// Does the opposite when set to false.
+    /// </summary>
+    [Parameter] 
+    public bool LoggedIn { get; set; } = false;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private Action<User> _logInUpdateEvent;
+
+    private bool _visible = false;
+
+    #region Methods
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        _visible = LoggedIn == (_storage.GetLoggedInUser() != null);
+
+        _logInUpdateEvent = (user) => {
+            _visible = LoggedIn == (user != null);
+            StateHasChanged();
+        };
+
+        _auth.OnLoggedStateChange += _logInUpdateEvent;
+    }
+
+    /// <summary>
+    /// Unsubscribing on disposal
+    /// </summary>
+    public void Dispose()
+    {
+        _auth.OnLoggedStateChange -= _logInUpdateEvent;
+    }
+
+    #endregion
+}

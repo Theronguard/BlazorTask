@@ -1,0 +1,121 @@
+﻿@using EBZClient.Scripts;
+@using EBZShared.Models;
+
+@inject IEBZWebApiController _webApiController;
+
+
+<div class="@Class">
+    <MudTable Items="@_users" Dense="true" Hover="true" Bordered="false" Filter="OnUserFilter" Height="50vh" Breakpoint="Breakpoint.Sm">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Users</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchInput" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"/>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><b>Last Active</b></MudTh>
+            <MudTh><b>Introduction</b></MudTh>
+            <MudTh><b>Skills</b></MudTh>
+            <MudTh><b>Interests</b></MudTh>
+            <MudTh><b>City</b></MudTh>
+            <MudTh><b>Country</b></MudTh>
+            <MudTh><b>Gender</b></MudTh>
+            <MudTh><b>Date of birth</b></MudTh>
+            <MudTh><b>Created</b></MudTh>
+            <MudTh><b>Last Active</b></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Username">@context.Username</MudTd>
+            <MudTd DataLabel="Introduction">@context.Introduction</MudTd>
+            <MudTd DataLabel="Skills">@context.Skills</MudTd>
+            <MudTd DataLabel="Interests">@context.Interests</MudTd>
+            <MudTd DataLabel="City">@context.City</MudTd>
+            <MudTd DataLabel="Country">@context.Country</MudTd>
+            <MudTd DataLabel="Gender">@context.Gender</MudTd>
+            <MudTd DataLabel="Date of birth">@context.DateOfBirth</MudTd>
+            <MudTd DataLabel="Created">@context.Created</MudTd>
+            <MudTd DataLabel="Last Active">@context.LastActive</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+    <div class="users-buttons-container">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="users-button" OnClick="GetAllUsers">All Users</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="users-button" OnClick="GetActiveUsers">Active users</MudButton>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Class { get; set; }
+
+    private string _searchInput;
+
+    private IEnumerable<User> _users = new List<User>();
+
+    #region Methods
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllUsers();
+    }
+
+    /// <summary>
+    /// Maps a filter function
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns></returns>
+    private bool OnUserFilter(User user)
+    {
+        return FilterFunc(user, _searchInput);
+    }
+
+    /// <summary>
+    /// Filters based on searchbox input
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="searchString"></param>
+    /// <returns></returns>
+    private bool FilterFunc(User user, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (user.Username.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (user.City.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (user.Country.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (user.Gender.ToString().ToLower() == searchString.ToLower())
+            return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private async Task GetAllUsers()
+    {
+        _users = await _webApiController.GetAllUsers();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private async Task GetActiveUsers()
+    {
+        _users = await _webApiController.GetActiveUsers();
+        StateHasChanged();
+    }
+
+    #endregion
+}
+

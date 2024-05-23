@@ -1,0 +1,24 @@
+﻿@*Logs out the user and shows a logout message*@
+
+@page "/logout"
+
+@using EBZClient.Components;
+@using EBZClient.Scripts;
+
+@inject IAuth _auth
+
+<PageTitle>Logout</PageTitle>
+
+<MudContainer Class="expand center-flex">
+    <FinishMessage Message="Successfully logged out!" Title="Logged out" />
+</MudContainer>
+
+@code {
+    /// <summary>
+    /// 
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        _auth.Logout();
+    }
+}
