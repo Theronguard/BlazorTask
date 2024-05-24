@@ -24,12 +24,12 @@ namespace EBZShared.Models
 
         [Required(ErrorMessage = "Username is required!")]
         [MinLength(4, ErrorMessage = "Username has to be at least 4 characters long!")]
-        [RegularExpression(@"^[a-zA-Z0-9]*$", ErrorMessage = "Username can contain letters and numbers only!")]
+        [RegularExpression(@"^[a-zA-Z0-9_]*$", ErrorMessage = "Username can contain letters and numbers only!")]
         [NotNull]
         public string Username { get; set; }
 
         [AllowNull]
-        public string? Introduction { get; set; }
+        public string? Description { get; set; }
 
         [AllowNull]
         public string? Skills { get; set; }
@@ -55,10 +55,10 @@ namespace EBZShared.Models
         public DateOnly DateOfBirth { get; set; }
 
         [NotNull]
-        public DateOnly Created { get; set; }
+        public DateTime Created { get; set; }
 
         [NotNull]
-        public DateOnly LastActive { get; set; }
+        public DateTime LastActive { get; set; }
 
         //empty constructor for ORM's
         public User() { }

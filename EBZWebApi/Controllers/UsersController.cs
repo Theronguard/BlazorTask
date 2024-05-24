@@ -97,7 +97,8 @@ namespace EBZWebApi.Controllers
             if (userDA.Users.Where(x => x.Username == user.Username).Count() > 0)
                 return BadRequest("This username is already taken!");
 
-            user.Created = DateOnly.FromDateTime(DateTime.UtcNow);
+            DateTime now = DateTime.Now;
+            user.Created = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0);
             user.LastActive = user.Created;
 
             userDA.Add(user);
@@ -211,7 +212,8 @@ namespace EBZWebApi.Controllers
             if (token != string.Empty)
                 _activeUsersService.AddActiveUser(username);
 
-            user.LastActive = DateOnly.FromDateTime(DateTime.UtcNow);
+            DateTime now = DateTime.Now;
+            user.LastActive = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0);
             userDA.SaveChanges();
 
             return Ok(token);

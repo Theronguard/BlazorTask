@@ -2,6 +2,7 @@
 using System.Text;
 using EBZShared.Models;
 using System.Text.Json;
+using EBZWebApi.Scripts;
 
 namespace EBZWebApi
 {
@@ -33,7 +34,7 @@ namespace EBZWebApi
         /// Reads the default user from the .json file
         /// </summary>
         /// <returns></returns>
-        private static User? ReadUserFromSeed()
+        private static List<User> ReadUsersFromSeed()
         {
             string dataSeedFilePath = Path.Join(AppDomain.CurrentDomain.BaseDirectory, _dataSeedFileName);
             if (!File.Exists(dataSeedFilePath)) return null;
@@ -49,8 +50,9 @@ namespace EBZWebApi
 
             JsonSerializerOptions options = new();
             options.PropertyNameCaseInsensitive = true;
+            options.Converters.Add(new SpecialDateTimeConverter());
 
-            return JsonSerializer.Deserialize<User>(readString.ToString(), options);
+            return JsonSerializer.Deserialize<List<User>>(readString.ToString(), options);
         }
 
         /// <summary>
@@ -63,12 +65,11 @@ namespace EBZWebApi
 
             if (userDA.Users.Count() > 0) return;
 
-            User? user = ReadUserFromSeed();
-
-            if (user is null) return;
-
-            userDA.Add(user);
-            userDA.SaveChanges();
+            foreach(User user in ReadUsersFromSeed())
+            {
+                userDA.Add(user);
+                userDA.SaveChanges();
+            }
         }
 
         #endregion
